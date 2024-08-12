@@ -12,7 +12,7 @@ namespace TimeEntryApproval.API.Application.Validator
 
         public TimeEntryValidator()
         {
-            _json = JObject.Parse(File.ReadAllText("C:\\dev\\TimeEntryApproval.API\\rules.json"));
+            _json = JObject.Parse(File.ReadAllText("C:\\dev\\github\\appointment-approval\\rules.json"));
             _rules = _json["appointmentRules"].ToObject<List<string>>();
         }
 

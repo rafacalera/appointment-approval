@@ -28,7 +28,7 @@ namespace TimeEntryApproval.API.Application.Commands.CreateTimeEntry
             var timeEntry = new TimeEntry(request.Date, request.Start, request.End, request.TaskId, _identityAccount.Id);
 
             _entity.Add(timeEntry);
-            timeEntry.Validate(await _validator.EvaluateRulesAsync(new TimeEntryValidation(timeEntry.Date, timeEntry.Start, timeEntry.End, timeEntry.TaskId, _identityAccount.Id, _identityAccount.Role)));
+            timeEntry.Validate(await _validator.EvaluateRulesAsync(new TimeEntryValidation(timeEntry.Date, timeEntry.Start, timeEntry.End, timeEntry.TaskId, _identityAccount.Id, _identityAccount.Role, timeEntry.Task.Project.Id, timeEntry.Task.Project.ProjectTypeId)));
 
             return await _dataContext.SaveChangesAsync() > 0;
         }
