@@ -2,11 +2,21 @@
 {
     public class TimeEntryValidation
     {
-        public DateOnly Date { get; set; }
-        public TimeOnly Start { get; set; }
-        public TimeOnly End { get; set; }
-        public Guid TaskId { get; set; }
-        public Guid UserId { get; set; }
-        public int Role { get; set; }
+        public TimeEntryValidation(DateOnly date, TimeOnly start, TimeOnly end, Guid taskId, Guid userId, int role)
+        {
+            Date = date;
+            Start = start;
+            End = end;
+            TaskId = taskId;
+            UserId = userId;
+            Role = role;
+        }
+
+        public DateOnly Date { get; private set; }
+        public TimeOnly Start { get; private set; }
+        public TimeOnly End { get; private set; }
+        public Guid TaskId { get; private set; }
+        public Guid UserId { get; private set; }
+        public int Role { get; private set; }
     }
 }

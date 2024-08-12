@@ -5,17 +5,22 @@ using TimeEntryApproval.API.Domain;
 
 namespace TimeEntryApproval.API.Application.Validator
 {
-    public class AppointmentValidator
+    public class TimeEntryValidator
     {
-        public static async Task<bool?> EvaluateRulesAsync(TimeEntryValidation timeEntry)
+        private readonly JObject _json;
+        private readonly List<string> _rules;
+
+        public TimeEntryValidator()
+        {
+            _json = JObject.Parse(File.ReadAllText("C:\\dev\\TimeEntryApproval.API\\rules.json"));
+            _rules = _json["appointmentRules"].ToObject<List<string>>();
+        }
+
+        public async Task<bool?> EvaluateRulesAsync(TimeEntryValidation timeEntry)
         {
             try
             {
-                var jsonString = await File.ReadAllTextAsync("C:\\dev\\TimeEntryApproval.API\\rules.json");
-                var jsonObject = JObject.Parse(jsonString);
-                var rules = jsonObject["appointmentRules"].ToObject<List<string>>();
-
-                foreach (var rule in rules)
+                foreach (var rule in _rules)
                 {
                     var result = await CSharpScript.EvaluateAsync<bool>(
                     rule,
