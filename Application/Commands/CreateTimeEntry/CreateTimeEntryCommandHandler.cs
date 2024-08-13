@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TimeEntryApproval.API.Application.Commands.ValidateTimeEntry;
 using TimeEntryApproval.API.Application.Security;
 using TimeEntryApproval.API.Application.Validator;
 using TimeEntryApproval.API.Domain;
@@ -28,16 +27,17 @@ namespace TimeEntryApproval.API.Application.Commands.CreateTimeEntry
 
         public async Task<bool> Handle(CreateTimeEntryCommand request, CancellationToken cancellationToken)
         {
-            var timeEntry = new TimeEntry(request.Date, request.Start, request.End, request.TaskId, _identityAccount.Id);
+            var task = await _dataContext.Set<ProjectTask>().Include(_ => _.Project).FirstOrDefaultAsync(_ => _.Id == request.TaskId);
+            if (task == null) return false;
 
+            var timeEntry = new TimeEntry(request.Date, request.Start, request.End, request.TaskId, _identityAccount.Id);
             _entity.Add(timeEntry);
 
-            if (await _dataContext.SaveChangesAsync() <= 0)
-                return false;
+            var validation = new TimeEntryValidation(timeEntry.Date, timeEntry.Start, timeEntry.End, timeEntry.TaskId, _identityAccount.Id, _identityAccount.Role, task.Project.Id, timeEntry.Task.Project.ProjectTypeId);
+            if (await _validator.EvaluateRulesAsync(validation))
+                timeEntry.Approve();
 
-            await _mediator.Send(new ValidateTimeEntryCommand { TimeEntryId = timeEntry.Id, Role = _identityAccount.Role, UserId = _identityAccount.Id});
-
-            return true;
+            return await _dataContext.SaveChangesAsync() > 0;
         }
     }
 }
