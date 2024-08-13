@@ -14,8 +14,7 @@ namespace TimeEntryApproval.API.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TimeEntry>().ToTable("TimeEntries");
-            modelBuilder.Entity<TimeEntry>().Property(x => x.Id)
-                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<TimeEntry>().Property(x => x.Id).IsRequired();
             modelBuilder.Entity<TimeEntry>().Property(x => x.Date)
                 .IsRequired();
             modelBuilder.Entity<TimeEntry>().Property(x => x.Start).IsRequired();

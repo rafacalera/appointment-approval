@@ -12,34 +12,27 @@ namespace TimeEntryApproval.API.Application.Validator
 
         public TimeEntryValidator()
         {
-            _json = JObject.Parse(File.ReadAllText("C:\\dev\\github\\appointment-approval\\rules.json"));
+            _json = JObject.Parse(File.ReadAllText("C:\\dev\\TimeEntryApproval.API\\rules.json"));
             _rules = _json["appointmentRules"].ToObject<List<string>>();
         }
 
-        public async Task<bool?> EvaluateRulesAsync(TimeEntryValidation timeEntry)
+        public async Task<bool> EvaluateRulesAsync(TimeEntryValidation timeEntry)
         {
-            try
+            foreach (var rule in _rules)
             {
-                foreach (var rule in _rules)
-                {
-                    var result = await CSharpScript.EvaluateAsync<bool>(
-                    rule,
-                    ScriptOptions.Default.AddReferences(typeof(TimeEntry).Assembly)
-                                        .AddImports("System")
-                                        .AddImports("System.Linq"),
-                    globals: timeEntry);
+                var result = await CSharpScript.EvaluateAsync<bool>(
+                rule,
+                ScriptOptions.Default.AddReferences(typeof(TimeEntry).Assembly)
+                                    .AddImports("System")
+                                    .AddImports("System.Linq"),
+                globals: timeEntry);
 
-                    if (!result)
-                    {
-                        return false;
-                    }
+                if (!result)
+                {
+                    return false;
                 }
-                return true;
             }
-            catch (Exception)
-            {
-                return null;
-            }
+            return true;
         }
     }
 }

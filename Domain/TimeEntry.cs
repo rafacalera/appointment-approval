@@ -6,6 +6,7 @@
 
         public TimeEntry(DateOnly date, TimeOnly start, TimeOnly end, Guid taskId, Guid userId)
         {
+            Id = Guid.NewGuid();
             Date = date;
             Start = start;
             End = end;
@@ -22,9 +23,9 @@
         public TimeOnly End { get; private set; }
         public bool? IsApproved { get; private set; }
 
-        public void Validate(bool? isApproved)
+        public void Approve()
         {
-            IsApproved = isApproved;
+            IsApproved = true;
         }
     }
 
